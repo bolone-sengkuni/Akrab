@@ -1,0 +1,364 @@
+tproxy-port: 9898
+mode: 'rule' 
+allow-lan: true
+bind-address: "*"
+log-level: silent
+ipv6: false
+external-controller: 0.0.0.0:9090
+external-ui: dashboard
+# [ feature Meta ]
+unified-delay: false
+geodata-mode: true
+tcp-concurrent: false
+enable-process: false
+secret: ""
+dns:
+  enable: true
+  ipv6: false
+  default-nameserver:
+    - '1.1.1.1'
+  listen: 0.0.0.0:1053
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  use-hosts: true
+  fake-ip-filter: ['+.clash.metacubex.one', '+.networktest.twilio.com', '+.twilio.com', 'connect.rom.miui.com', '+.msftnsci.com', '+.msftconnecttest.com', '+.gstatic.com', '+.stun.*.*', '+.stun.*.*.*', '+.stun.*.*.*.*', '+.time.*', '+.time.*.*', '+.time.*.*.*', '+.ntp.*', '+.ntp.*.*', '+.ntp.*.*.*', 'dns.msftnsci.com', 'www.msftnsci.com', 'www.msftconnecttest.com']
+  nameserver:
+    - '1.1.1.1'
+    - 104.26.4.10
+#    - '[2606:4700:4700::1111]:53'
+  fallback:
+    - '1.0.0.1'
+#    - '[2606:4700:4700::1001]:53'
+#  nameserver-policy:
+#    "tamarin.mjee.me": '8.8.8.8'
+#    "dev.appsflyer.com": '1.1.1.1'
+  fallback-filter:
+    geoip: true
+    geoip-code: 'ID'
+    geosite: 
+      - 'GFW'
+      - 'GREATFIRE'
+    domain: ["+.google.com", "+.facebook.com", "+.youtube.com", "+.githubusercontent.com", "+.googlevideo.com"]
+    ipcidr:
+    - 0.0.0.0/8
+    - 10.0.0.0/8
+    - 100.64.0.0/10
+    - 127.0.0.0/8
+    - 169.254.0.0/16
+    - 172.16.0.0/12
+    - 192.0.0.0/24
+    - 192.0.2.0/24
+    - 192.88.99.0/24
+    - 192.168.0.0/16
+    - 198.18.0.0/15
+    - 198.51.100.0/24
+    - 203.0.113.0/24
+    - 224.0.0.0/4
+    - 240.0.0.0/4
+    - 255.255.255.255/32
+tun:
+  enable: false
+  # biarkan default utun
+  device: utun
+  stack: system
+  dns-hijack:
+    - 'any:53'
+    - 'tcp://any:53'
+  auto-route: false
+  auto-detect-interface: false
+sniffer:
+  enable: true
+  force: true
+  sniffing:
+    - tls
+    - http
+  port-whitelist:
+    - 80
+    - 443
+    - 8000-9000
+  skip-domain:
+    - '+.apple.com'
+  force-domain:
+    - '+'
+iptables:
+  enable: false # dn't set true
+  inbound-interface: "lo"
+interface-name: ""
+proxies:
+proxy-groups:
+- name: game
+  type: select
+  use:
+  - Id
+  - Sg
+  proxies:
+   - DIRECT
+   - REJECT
+- name: sosmed
+  type: load-balance
+  type: select
+  use:
+  - Id
+  - Sg
+  proxies:
+   - DIRECT
+   - BEST-PING
+- name: streaming
+  type: select
+  use:
+  - Id
+  - Sg
+  proxies:
+   - DIRECT
+   - BEST-PING
+- name: umum
+  type: select
+  use:
+  - Id
+  - Sg
+  proxies:
+   - DIRECT
+   - BEST-PING
+- name: ADS
+  type: select
+  proxies:
+  - DIRECT
+  - REJECT
+- name: BEST-PING
+  type: url-test
+  url: http://hi.bonds.id/ping
+  interval: 300
+  tolerance: 50
+  use:
+  - Id
+  - Sg
+  
+proxy-providers:
+  Id:
+    type: file
+    path: "./proxy_provider/Id.yaml"
+    health-check:
+      enable: true
+      url: https://cp.cloudflare.com/generate_204
+      interval: 120
+      
+  Sg:
+    type: file
+    path: "./proxy_provider/Sg.yaml"
+    health-check:
+      enable: true
+      url: https://cp.cloudflare.com/generate_204
+      interval: 120
+
+rule-providers:
+  rule_portgames:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_portgames.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_portgames.yaml
+    interval: 86400
+    
+  rule_videoconferences:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_videoconferences.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_videoconferences.yaml
+    interval: 86400
+    
+  rule_indo:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_Indo.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_Indo.yaml
+    interval: 86400
+    
+  rule_sosmed:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_sosmed.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_sosmed.yaml
+    interval: 86400
+    
+  rule_streaming:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_streaming.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_streaming.yaml
+    interval: 86400
+    
+  rule_gaming:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_gaming.yaml"
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_gaming.yaml
+    interval: 86400
+    
+  rule_discord:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/discord.yaml
+    path: "./rule_provider/rule_discord.yaml"
+    interval: 86400
+    
+  rule_blockads:
+    type: http
+    behavior: classical
+    path: "./rule_provider/rule_BlockAds.yaml"
+    url: https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Advertising/Advertising_Classical.yaml
+    interval: 86400
+    
+  rule_reject:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt
+    path: "./rule_provider/rule_reject.yaml"
+    interval: 86400
+    
+  rule_porn:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/category-porn.yaml
+    path: "./rule_provider/rule_porn.yaml"
+    interval: 86400
+    
+  rule_nsfw:
+    type: http
+    behavior: classical
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_nsfw.yaml
+    path: "./rule_provider/rule_nsfw.yaml"
+    interval: 86400
+    
+  rule_telegramcidr:
+    type: http
+    behavior: ipcidr
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt
+    path: "./rule_provider/rule_telegramcidr.yaml"
+    interval: 86400
+    
+  rule_telegram:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/telegram.yaml
+    path: "./rule_provider/rule_telegram.yaml"
+    interval: 86400
+    
+  rule_disneyplus:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/disney.yaml
+    path: "./rule_provider/rule_disneyplus.yaml"
+    interval: 86400
+    
+  rule_games:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/category-games.yaml
+    path: "./rule_provider/rule_games.yaml"
+    interval: 86400
+    
+  rule_hbo:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/hbo.yaml
+    path: "./rule_provider/rule_hbo.yaml"
+    interval: 86400
+    
+  rule_iqiyi:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/iqiyi.yaml
+    path: "./rule_provider/rule_iqiyi.yaml"
+    interval: 86400
+    
+  rule_line:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/line.yaml
+    path: "./rule_provider/rule_line.yaml"
+    interval: 86400
+    
+  rule_metaverse:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/facebook.yaml
+    path: "./rule_provider/rule_metaverse.yaml"
+    interval: 86400
+    
+  rule_netflix:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/netflix.yaml
+    path: "./rule_provider/rule_netflix.yaml"
+    interval: 86400
+    
+  rule_primevideo:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/primevideo.yaml
+    path: "./rule_provider/rule_primevideo.yaml"
+    interval: 86400
+    
+  rule_playstore:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/malikshi/open_clash@main/rule_provider/rule_playstore.yaml
+    path: "./rule_provider/rule_playstore.yaml"
+    interval: 86400
+    
+  rule_tiktok:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/tiktok.yaml
+    path: "./rule_provider/rule_tiktok.yaml"
+    interval: 86400
+    
+  rule_twitch:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/twitch.yaml
+    path: "./rule_provider/rule_twitch.yaml"
+    interval: 86400
+    
+  rule_twitter:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/twitter.yaml
+    path: "./rule_provider/rule_twitter.yaml"
+    interval: 86400
+    
+  rule_youtube:
+    type: http
+    behavior: domain
+    url: https://rules.kr328.app/youtube.yaml
+    path: "./rule_provider/rule_Youtube.yaml"
+    interval: 86400
+rules:
+- RULE-SET,rule_blockads,ADS
+- RULE-SET,rule_reject,ADS
+- RULE-SET,rule_porn,ADS
+- RULE-SET,rule_nsfw,ADS
+- RULE-SET,rule_streaming,streaming
+- RULE-SET,rule_hbo,streaming
+- RULE-SET,rule_iqiyi,streaming
+- RULE-SET,rule_primevideo,streaming
+- RULE-SET,rule_twitch,streaming
+- RULE-SET,rule_youtube,streaming
+- RULE-SET,rule_sosmed,sosmed
+- RULE-SET,rule_line,sosmed
+- RULE-SET,rule_metaverse,sosmed
+- RULE-SET,rule_tiktok,sosmed
+- RULE-SET,rule_twitter,sosmed
+- RULE-SET,rule_telegram,sosmed
+- RULE-SET,rule_telegramcidr,sosmed
+- RULE-SET,rule_videoconferences,streaming
+- RULE-SET,rule_playstore,umum
+- RULE-SET,rule_gaming,game
+- RULE-SET,rule_discord,game
+- RULE-SET,rule_games,game
+- RULE-SET,rule_portgames,game
+- DST-PORT,21-23/53/123/143/194/443/465/587/853/993/995/998/2052/2053/2082/2083/2086/2095/2096/5222/5228/5229/5230/8080/8443/8880/8888-8889,game,udp
+- MATCH,umum
+- GEOSITE,TELEGRAM,sosmed
+- GEOIP,TELEGRAM,sosmed
+- GEOSITE,WHATSAPP,sosmed
+- GEOSITE,YOUTUBE,streaming
