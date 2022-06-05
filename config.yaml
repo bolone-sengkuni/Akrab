@@ -144,7 +144,7 @@ proxy-providers:
       
   Sg:
     type: file
-    path: "./proxy_provider/Sg.yaml"
+    path: "Sg.yaml"
     health-check:
       enable: true
       url: https://cp.cloudflare.com/generate_204
